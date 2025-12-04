@@ -110,7 +110,7 @@ We will introduce the exact equations in mission 2. For now it's enough to know 
 | $w^{(1)}. W^{(2)}$ | Weights | Influence of one feature on the next layer |
 | $b^{(1)}. b^{(2)}$ | Biases | Adjustment to neuron activation |
 | $z^{(1)}. z^{(2)}$ | Weighted Sum + Bias | Pre-activation value in neurons |
-| $\math{a}^{(1)}$ | Hidden layer | Learned internal concepts |
+| ${a}^{(1)}$ | Hidden layer | Learned internal concepts |
 | $\hat{y}$ | Output layer | Final win prediction |
 
 In mission 2 we will see how the forward pass works to get from $\mathbf{X}$ to $\hat{y}$.
@@ -118,9 +118,99 @@ In mission 2 we will see how the forward pass works to get from $\mathbf{X}$ to 
 
 ## Mission 2 - The battle: Forward pass and cost
 
-forward pass
+Now that we have our really small Starcraft 2 network, the next question you may be asking is: 
 
-cost function 
+"What does it actually do with a single game state?" 
+"What happens inside the network?"
+"How does it make a prediction?"
+
+All good questions! The answer lies in the **forward pass**.
+
+In this mission we will follow one position through the network **forwards** and see how it produces a prediction. Afterwards we will then define a **cost function** to measure how good or bad that prediction was.
+
+
+### From game state to prediction - The forward pass
+
+If we take a single snapshot of a game and turn it into our feature vector
+
+$$
+\mathbf{X} =
+\begin{bmatrix}
+\text{workers} \\
+\text{army supply} \\
+\text{total unit value} \\
+\text{number of structures} \\
+\text{tech score} \\
+\end{bmatrix}
+$$
+
+Our network processes this input layer by layer
+
+**Input Layer to Hidden Layer**:
+
+First we combine the inputs using a weight matrix $W^{(1)}$ and bias vector $b^{(1)}$:
+
+$$
+\mathbf{z}^{(1)} = W^{(1)}  \mathbf{X} + b^{(1)}
+$$
+
+Each component of $\mathbf{z}^{(1)}$ is kind of a "raw score" for a hidden neuron. All of which is based on the current game state. 
+
+We then apply a non-linear activation function $\alpha$. 
+
+$$ \mathbf{a}^{(1)} = \alpha(\mathbf{z}^{(1)}) $$
+
+You can think of $\mathbf{a}^{(1)}$ as the network's learned internal representation of the game state.
+
+- "I'm ahead in economy"
+- "I have a strong army"
+- "My tech is advanced"
+
+The network will *learn* what these mean. 
+
+**Hidden Layer to Output Layer**:
+Next, we take the activations from the hidden layer and pass them to the output layer using another weight matrix $W^{(2)}$ and bias $b^{(2)}$:
+
+$$
+z^{(2)} = W^{(2)} \mathbf{a}^{(1)} + b^{(2)}
+$$
+
+and then pass this through a final activation function (often a sigmoid for probabilities):
+
+$$\hat{y} = \sigma(z^{(2)})$$
+
+This $\hat{y}$ is our predicted probability of winning the game from the current state $\mathbf{X}$.
+
+a value like $\hat{y} = 0.75$ means the network thinks there's a 75% chance of winning from this position.
+
+### Measuring prediction quality - The cost function
+
+The forward pass gives us a prediction $\hat{y}$, but how do we know if it's any good? - Also once the game finishes we also know the actual outcome $y$ (1 for win, 0 for loss).
+
+To actually train a network we need to turn the difference between prediction ($\hat{y}$) and actual outcome ($y$) into a number we can minimize (the cost). This is where the **cost function** comes in.
+
+$$
+C(\hat{y}, y) = \frac{1}{2} (\hat{y} - y)^2
+$$
+
+To make this intuitive: 
+
+- If the network predicts $\hat{y} = 0.9$ but actually loses ($y=0$), the cost is high: $C(0.9, 0) = 0.405$.
+- If it predicts $\hat{y} = 0.6$ and wins ($y=1$), the cost is lower: $C(0.6, 1) = 0.08$.
+- If it predicts perfectly $\hat{y} = 1$ and wins ($y=1$), the cost is zero: $C(1, 1) = 0$.
+
+Over many games from replays, we average the cost across all predictions to get an overall measure of how well the network is doing.
+
+### Why does this matter?
+
+At this stage we have:
+
+- A **forward pass** that turns a game state $\mathbf{X}$ into a win probability $\hat{y}$.
+- A **cost function** that measures how far off that prediction is from the actual outcome $y$.
+
+In mission 3, we will use the chain rule (from calculus) to figure out how to adjust the weights and biases in the network to reduce this cost. **This is the essence of back-propagation** - pushing the error backwards through the network to learn from mistakes and improve future predictions.
+
+This is how we turn a simple Starcraft 2 win predictor into a learning system that can optimize its strategy over time.
 
 ## Mission 3 - Replay Analysis: chain rule & errors
 
