@@ -1,5 +1,4 @@
-# IUPUI-ADS-h611-FinalProject
-# Draft of the write up will be here!
+# H611 - FinalProject (IUPUI - Applied Data Science)
 
 # FOR THE TA
 I was planning on writing a write up here and then learning how to make animated videos the same way as 3Blue1Brown, all in python. 
@@ -88,7 +87,7 @@ We will use a very small neural network with:
 
 You can visualise the network like this:
 
-DIAGRAM
+![alt text](images/Network_Structure.png)
 
 Each arrow has a **weight** associated with it, which determines the strength of the connection between neurons.Another way to think about this is how strongly one neuron influences the next. 
 
@@ -157,3 +156,7 @@ Our toy SC2 win predictor is tiny compared to AlphaStar, but the core story is t
 ## References
 
 - https://deepmind.google/blog/alphastar-grandmaster-level-in-starcraft-ii-using-multi-agent-reinforcement-learning/ 
+
+
+## AI acknowledgement
+All diagrams were created with the help of Nano-bannana AI image generator.
