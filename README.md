@@ -214,34 +214,89 @@ This is how we turn a simple Starcraft 2 win predictor into a learning system th
 
 ## Mission 3 - Replay Analysis: chain rule & errors
 
-chain rule 
+So far we can:
 
-measuring error
+- Take a Starcraft 2 position $\mathbf{X}$ and run it forward to get a prediction $\hat{y}$.
+- Compare $\hat{y}$ to the actual outcome $y$ using a cost function $C(\hat{y}, y)$.
 
-DIAGRAM
+Combined , this tells us how well our network is doing at predicting wins from game states.
+
+Now to actually **learn** from its mistakes, we need to figure out how to adjust the weights and biases in the network to reduce this cost. This is where the **chain rule** from calculus comes in.
+
+### The chain rule recap - Breaking down the error
+
+If $C$ depends on $z$ and $z$ depends on $w$, then the chain rule tells us:
+
+$$
+\frac{dC}{dw} = \frac{dC}{dz} \frac{dz}{dw}
+$$
+
+In a neural net, each weight $w$ influences the cost $C$ through multiple layers of computations. The chain rule lets us break down this influence step by step.
+
+### Error at the output layer
+
+NEEDS COMPLETING
+
+### Error at the hidden layer
+
+NEEDS COMPLETING
+
+### What is all this used for?
+Now we know the error signals at each layer ($delta^{(2)}$ and $\delta^{(1)}$), In Mission 4 we can use these to compute the gradients of the cost with respect to each weight and bias in the network.
 
 ## Mission 4 - Rethinking your build - Weights & psueduo code
 
-deltas 
+By this stage we have:
 
-gradients
+- A **Forward Pass** that turns a game state $\mathbf{X}$ into a win probability $\hat{y}$.
+- **Error signals** at each layer ($\delta^{(2)}$ and $\delta^{(1)}$) that tell us how much each neuron contributed to the overall cost.
 
-gradient descent
+Now in this mission we turn those error signals into gradients and then into a simple learning rule. 
 
-psuedocode
 
+### Gradients: How each weight affects cost
+
+NEEDS COMPLETING
+
+### Gradient descent: Updating the build
+
+NEEDS COMPLETING
+
+### Back-propagation as a training loop (pseudo code)
+
+NEEDS COMPLETING
 
 ## Mission 5 - From getting GG'ed to Grandmaster - Putting it all together
 
 ### Recap
 
+We started with a StarCraft 2 league/ladder mindset. Play a lot of hames, make mistakes, learn from them and improve over time.
+
+To turn that into math speak and not just gamer speak, we did the following:
+
+- Mission 1: Defined a small neural network that takes a game state $\mathbf{X}$ and outputs a win probability $\hat{y}$.
+
+- Mission 2: Explained the forward pass that computes $\hat{y}$ from $\mathbf{X}$ and defined a cost function $C(\hat{y}, y)$ to measure prediction quality.
+
+- Mission 3: Used the chain rule to compute error signals at each layer of the network, telling us how much each neuron contributed to the overall cost.
+
+- Mission 4: Turned those error signals into gradients and defined a simple learning rule to update weights and biases using gradient descent.
+
+So all together, back-propagation allows our Starcraft 2 win predictor to learn from its mistakes. By adjusting its weights and biases based on the errors it made in previous games, it can improve its predictions over time. 
+
 
 ### From our toy network to real systems - AlphaStar
 
 
-Back-propagation is the engine behind the success of deep learning, enabling neural networks to learn from their mistakes and improve over time. By understanding the mechanics of back-propagation through the lens of a real-time strategy game like Starcraft II, we can appreciate how this algorithm allows AI to optimize strategies and make better decisions. Whether you're a gamer or a machine learning enthusiast, the principles of back-propagation are fundamental to the advancement of artificial intelligence.
+Back-propagation is the engine behind the success of deep learning, enabling neural networks to learn from their mistakes and improve over time. By understanding the mechanics of back-propagation through the lens of a real-time strategy game like Starcraft II, we can appreciate how this algorithm allows AI to optimize strategies and make better decisions. 
 
-Our toy SC2 win predictor is tiny compared to AlphaStar, but the core story is the same.  Play games, measure error, push blame backwards through the network and slowly, painfully stop getting cheesed, GG'ed and eventually reach Grandmaster level play.
+Whether you're a gamer or a machine learning enthusiast, the principles of back-propagation are fundamental to the advancement of artificial intelligence.
+
+Our small SC2 win predictor is tiny compared to something real, such as "AlphaStar", but the core story is the same.  Play games, measure error, push blame backwards through the network and slowly, painfully stop getting cheesed, GG'ed and eventually reach Grandmaster level play.
+
+AlphaStar was a real example in 2018 of an AI that mastered Starcraft II using deep reinforcement learning and back-propagation. It learned from millions of games, improving its strategies and decision-making over time.
+
+![alt text](images/SC2_Promotion.png)
 
 ## References
 
