@@ -14,7 +14,11 @@ However.... That was over ambitious (but still very possible! - just couldn't fi
 
 Imagine you're playing a competitive game for the 67th time that day. Every attempt you change something, use a new or different race/species, try a new build strategy, use different units. You want to optimize your build and strategy to do the most damage possible or attack more quickly and hopefully win the game.
 
-In this paper, I aim to explain back-propagation through the lens of a video game Real time strategy (RTS) optimization. For those non gamers, imagine a very intense, live game of chess. Back-propagation is the algorithm that allows neural networks to learn from their mistakes and improve over time.
+Don't you just wish there was a way to learn from all those games, analyze what worked and what didn't, and improve your strategy over time? Maybe even have a computer help you figure it out?
+
+In this paper, I aim to explain back-propagation through the lens of a video game Real time strategy (RTS) optimization. For those non gamers, imagine a very intense, live game of chess. Back-propagation is the algorithm that allows neural networks to learn from their mistakes and improve over time. 
+
+Maybe this could close our skill gap?
 
 ![alt text](images/ChessVsSC2.png)
 
