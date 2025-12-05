@@ -24,7 +24,7 @@ Maybe this could close our skill gap?
 
 **What is Starcraft 2**
 
-The literal game I will focus on is Starcraft II, a popular RTS game where players gather resources, build bases, and command armies to defeat their opponents. The goal is to optimize your build order and strategy to maximize your chances of winning. 
+The literal game I will focus on is Starcraft II, a popular RTS game released in 2010, where players play as one of three races/species, gather resources, build bases, and command armies to defeat their opponents. The goal is to optimize your build order and strategy to maximize your chances of winning. 
 
 My goal in this write up is to make back-propagation understandable using a small Starcraft 2 example, not to explain every detail of Starcraft or deep learning.
 
@@ -32,38 +32,41 @@ My goal in this write up is to make back-propagation understandable using a smal
 
 The key points are:
 
-- **It is real time** - meaning you have to make decisions quickly and adapt to changing situations.
-- **Partially observable** - you can't see everything your opponent is doing, so you have to make educated guesses.
+- **It is real time** - meaning you have to make decisions quickly and adapt to changing situations. There is no turn based system. 
+- **Partially observable** - you can't see everything your opponent is doing, so you have to make educated guesses. This is called the "fog of war".
 - **Long horizon strategy** - decisions made early in the game can have a significant impact on the outcome and games can last up to around 40 minutes and longer. 
+- **Complex interactions** - there are many different units, buildings, and technologies that interact in complex ways. Imagine trying to learn chess with 100 different piece types, each with unique abilities and combinations like our other favourite game, rock paper scissors.
 
-In this write up I am going to ignore most of that complexity and focus on one more ingredient **"back-propagation"** . I will use a simplified StarCraft 2 example so we can all see how the math actually works. 
+In this write up I am going to ignore most of that complexity and focus on **"back-propagation"** . I will use a simplified StarCraft 2 example so we can all see how the math actually works. 
 
-For an example of how advanced this can get, "AlphaStar" was a real example of an AI in 2028 that mastered Starcraft II using deep reinforcement learning and back-propagation. It learned from millions of games, improving its strategies and decision-making over time and inspired this write up. 
+For an example of how advanced this can get, "AlphaStar" was a real example of an AI in 2018 that mastered Starcraft II using deep reinforcement learning and back-propagation. It learned from millions of games, improving its strategies and decision-making over time and inspired this write up. 
 I personally never got to play against it, but i guarantee it would have been a tough match and i got to grandmaster rank (Top 4% of players) in SC2 back in the day.
 
 I hope you enjoy this write up and learn something new about back-propagation and neural networks!
 
 **Roadmap**
 
-- Mission 1 introduces the network structure, 
-- Mission 2 covers the forward pass and cost function, 
-- Mission 3 explains the chain rule and error measurement, 
-- Mission 4 discusses weights and pseudo code
-- Mission 5 ties everything together with a recap and real-world applications.
+The papers structure is as follows:
+
+- Mission 1 Introduces the network structure.
+- Mission 2 Covers the forward pass and cost function.
+- Mission 3 Explains the chain rule and error measurement.
+- Mission 4 Discusses weights and pseudo code.
+- Mission 5 Ties everything together with a recap and real-world applications.
 
 ![alt text](https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExMWFpNndmeTdjMTdsMGEwbnN2YmViN3l2NXVudTdibXBreDhyZzMzMCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0MYrZdF1cWCpn2CI/giphy.gif)
 
 
 ## Mission 1 - The Network as a build order
 
-To mke back-propagation understandable, we will focus on a small problem from a Starcraft 2 match. 
+To make back-propagation understandable, we will focus on a small problem from a Starcraft 2 match. 
 
-A full game as a LOT of details, instead we will focus on just a few high level concepts:
+A full game has a LOT of details, instead we will focus on just a few high level concepts:
 
 - Numbers of workers (Resource collection rate)
-- Army supply (how many units you can have)
+- Army supply (how many units you can have / build up to without increasing your supply cap)
 - total unit (army) value currently built
-- Number of structures
+- Number of structures (And their total value)
 - A simple tech score based on investment
 
 Bundles together in a vector, it would look like:
@@ -79,28 +82,28 @@ $$
 \end{bmatrix}
 $$
 
-Our goal is for a neural network to take this $\mathbf{X}$ input and output a single number $\hat{y}$, which represents the predicted probability of winning the game from this state.
+Our goal is for a neural network to take this $\mathbf{X}$ input (the vector) and output a single number $\hat{y}$, which represents the predicted probability of winning the game from this snapshot / game state.
 
 ### Network Structure
 
 We will use a very small neural network with:
 
 - **Input Layer**: 5 neurons (one for each feature in $\mathbf{X}$)
-- **Hidden Layer**: 3 neurons
-- **Output Layer**: 1 neuron (for the win probability $\hat{y}$
+- **Hidden Layer**: 3 neurons (will be explained later)
+- **Output Layer**: 1 neuron (for the win probability $\hat{y}$)
 
 You can visualise the network like this:
 
 ![alt text](images/Network_Structure.png)
 
-Each arrow has a **weight** associated with it, which determines the strength of the connection between neurons.Another way to think about this is how strongly one neuron influences the next. 
+Each arrow has a **weight** associated with it, which determines the strength of the connection between neurons. Another way to think about this is how strongly one neuron influences the next. 
 
-Each neuron also has a **bias** term, which allows the neuron to shift its activation function up or down.
+Each neuron (each circle) also has a **bias** term, which allows the neuron to shift its activation function up or down.
 
 Inside each neuron we:
 
-- Take a weighted sum of the inputs
-- Add the bias
+- Take a weighted sum of the inputs ($\mathbf{X}$ for the input layer, or activations from the previous layer for hidden/output layers)
+- Add the bias (to the neuron/circles)
 - Pass the result through an activation function
 
 We will introduce the exact equations in mission 2. For now it's enough to know that the network is a stack of simple layers/computations that turn a game state $\mathbf{X}$ into a win probability $\hat{y}$.
@@ -135,7 +138,7 @@ In this mission we will follow one position through the network **forwards** and
 
 ### From game state to prediction - The forward pass
 
-If we take a single snapshot of a game and turn it into our feature vector
+If we take a single snapshot of a game and turn it into our feature vector, just like before we have:
 
 $$
 \mathbf{X} =
