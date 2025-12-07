@@ -242,11 +242,37 @@ In a neural net, each weight $w$ influences the cost $C$ through multiple layers
 
 ### Error at the output layer
 
-NEEDS COMPLETING
+At the output layer, we define the error signal $\delta^{(2)}$ as:
+
+$$
+\delta^{(2)} = \frac{\partial C}{\partial z^{(2)}}
+$$
+
+Using the chain rule, we can express this as:
+
+$$
+\delta^{(2)} = \frac{\partial C}{\partial \hat{y}} \cdot \frac{\partial \hat{y}}{\partial z^{(2)}}
+$$
+
+$\delta^{(2)}$ tells us how much the output neuron contributed to the overall cost. It combines:
+- The sensitivity of the cost to the output prediction ($\frac{\partial C}{\partial \hat{y}}$)
+- The sensitivity of the output prediction to the pre-activation value ($\frac{\partial \hat{y}}{\partial z^{(2)}}$)
+  
+This error signal $\delta^{(2)}$ is crucial because it tells us how to adjust the weights and biases leading into the output layer to reduce the cost.
 
 ### Error at the hidden layer
 
-NEEDS COMPLETING
+The hidden layer does not see the cost $C$ directly, but it influences it through the output layer. We define the error signal at the hidden layer $\delta^{(1)}$ as:
+
+$$
+\delta^{(1)} = \frac{\partial C}{\partial z^{(1)}}
+$$
+
+In words, we take the output error $\delta^{(2)}$ and send it/'propagate it' backwards through the weights connecting the hidden layer to the output layer. Using the chain rule, we get:
+
+$$
+\delta^{(1)} = (W^{(2)})^T \delta^{(2)} \cdot \frac{\partial a^{(1)}}{\partial z^{(1)}}
+$$
 
 ### What is all this used for?
 Now we know the error signals at each layer ($delta^{(2)}$ and $\delta^{(1)}$), In Mission 4 we can use these to compute the gradients of the cost with respect to each weight and bias in the network.
@@ -263,15 +289,69 @@ Now in this mission we turn those error signals into gradients and then into a s
 
 ### Gradients: How each weight affects cost
 
-NEEDS COMPLETING
+Once we know the error signals, we can compute the gradients of the cost with respect to each weight and bias in the network.
+
+For weights in the output layer:
+
+$$
+\frac{\partial C}{\partial W^{(2)}} = \delta^{(2)} \cdot (a^{(1)})^T
+$$
+
+For weights in the hidden layer:
+
+$$
+\frac{\partial C}{\partial W^{(1)}} = \delta^{(1)} \cdot (X)^T
+$$
+
+Each gradient tells us how much changing that weight would change the overall cost.
 
 ### Gradient descent: Updating the build
 
-NEEDS COMPLETING
+To actually learn, we need to use **gradient descent** to update the weights and biases in the direction that reduces the cost.
+
+For each weight, we update it as follows:
+
+$$
+W^{(l)} := W^{(l)} - \eta \frac{\partial C}{\partial W^{(l)}}
+$$
+
+- The gradients $\frac{\partial C}{\partial W^{(l)}}$ tell us the direction to adjust the weights to reduce cost.
+- Subtracting a fraction of the gradient (scaled by the learning rate $\eta$) moves the weights in the right direction to improve predictions and lower the cost.
+
+In starcraft 2 terms, this is like adjusting your build order and strategy based on what you learned from previous games. If a certain approach led to a loss, you tweak your strategy slightly to avoid making the same mistake again.
 
 ### Back-propagation as a training loop (pseudo code)
 
-NEEDS COMPLETING
+Putting it all together, the back-propagation algorithm can be summarized in the following pseudo code:
+
+
+```
+for each game replay in training set:
+    X, y = extract_game_state_and_outcome(replay)
+
+    # Forward pass
+    a1 = alpha(W1 * X + b1)
+    y_hat = sigma(W2 * a1 + b2)
+
+    # Compute cost
+    C = 0.5 * (y_hat - y)^2
+
+    # Backward pass
+    delta2 = (y_hat - y) * sigma_prime(z2)
+    delta1 = (W2^T * delta2) * alpha_prime(z1)
+
+    # Compute gradients
+    dC_dW2 = delta2 * a1^T
+    dC_dW1 = delta1 * X^T
+
+    # Update weights and biases
+    W2 := W2 - eta * dC_dW2
+    b2 := b2 - eta * delta2
+    W1 := W1 - eta * dC_dW1
+    b1 := b1 - eta * delta1
+```
+
+
 
 ## Mission 5 - From getting GG'ed to Grandmaster - Putting it all together
 
@@ -290,6 +370,17 @@ To turn that into math speak and not just gamer speak, we did the following:
 - Mission 4: Turned those error signals into gradients and defined a simple learning rule to update weights and biases using gradient descent.
 
 So all together, back-propagation allows our Starcraft 2 win predictor to learn from its mistakes. By adjusting its weights and biases based on the errors it made in previous games, it can improve its predictions over time. 
+
+
+### Limitations of back-propagation in Starcraft 2
+
+Back-propagation is a powerful algorithm, but it has limitations when applied to complex games like Starcraft 2:
+
+- **Long-term Dependencies**: Decisions made early in the game can have long-term consequences that are difficult to capture with back-propagation alone.
+
+- **Exploration vs Exploitation**: Back-propagation focuses on minimizing immediate prediction errors, but in a game like Starcraft 2, exploring new strategies is crucial for long-term success. 
+
+- **Computational Complexity**: Training deep neural networks with back-propagation can be computationally intensive, especially for large-scale games like Starcraft 2.
 
 
 ### From our toy network to real systems - AlphaStar
